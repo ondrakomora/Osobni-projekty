@@ -1,0 +1,14 @@
+﻿  CppCLR_WinformsProjekt.cpp
+  WARNING: detected 'min' and/or 'max' macros and undefined them;
+  WARNING: you may wish to define NOMINMAX before including any windows header
+C:\Users\ondra\source\repos\NN-User Interface\NN-User Interface\Data_handler.h(13,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\ondra\source\repos\NN-User Interface\NN-User Interface\Data_handler.h(44,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\ondra\source\repos\NN-User Interface\NN-User Interface\Data_handler.h(46,14): warning C4244: 'argument': conversion from 'eT' to 'const arma::uword', possible loss of data
+          with
+          [
+              eT=double
+          ]
+C:\Users\ondra\source\repos\NN-User Interface\NN-User Interface\Data_handler.h(55,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\ondra\source\repos\NN-User Interface\NN-User Interface\Data_handler.h(94,13): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+  AssemblyInfo.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
+  NN-User Interface.vcxproj -> C:\Users\ondra\source\repos\NN-User interface\Debug\NN-User Interface.exe

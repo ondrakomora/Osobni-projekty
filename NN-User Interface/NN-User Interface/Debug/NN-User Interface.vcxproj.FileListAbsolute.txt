@@ -1,0 +1,3 @@
+C:\Users\ondra\source\repos\NN-User Interface\NN-User Interface\Debug\NN-User Interface.vcxprojAssemblyReference.cache
+C:\Users\ondra\source\repos\NN-User interface\NN-User Interface\Debug\NN_User_Interface.Form1.resources
+C:\Users\ondra\source\repos\NN-User interface\NN-User Interface\Debug\NN-User Interface.vcxproj.GenerateResource.cache
