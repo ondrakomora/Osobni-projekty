@@ -11,6 +11,7 @@
 #include <armadillo>
 #include <Data_handler.h>
 #include <Exceptions.h>
+#include <NeuralNetwork.h>
 
 
 namespace CppCLRWinformsProjekt {
@@ -22,8 +23,8 @@ namespace CppCLRWinformsProjekt {
 	using namespace System::Data;
 	using namespace System::Drawing;
 
-	/// <summary>
-	/// Zusammenfassung für Form1
+	/// </summary>
+	/// Zusammenfassung fÃ¼r Form1
 	/// </summary>
 	public ref class Form1 : public System::Windows::Forms::Form
 	{
@@ -38,21 +39,28 @@ namespace CppCLRWinformsProjekt {
 		double dev_size;
 		double test_size;
 		double train_size;
-		
+
 		int n_td_features;
 		int n_tt_features;
+
+		double learn_rate;
+		int batch_size;
+		int epochs;
+
+		double reg_term;
+		double l1_ratio;
+
+		std::vector<int>* architecture;
+		NeuralNetwork* nn;
 
 	public:
 		Form1(void)
 		{
 			InitializeComponent();
 			//
-			//TODO: Konstruktorcode hier hinzufügen.
+			//TODO: Konstruktorcode hier hinzufÃ¼gen.
 			//
 
-			train_data = new mat(1, 1); train_data = new mat(1, 1);
-			dev_data = new mat(1, 1); dev_target = new mat(1, 1);
-			test_data = new mat(1, 1); test_target = new mat(1, 1);
 			train_size = 1;
 			dev_size = 0;
 			test_size = 0;
@@ -84,26 +92,48 @@ namespace CppCLRWinformsProjekt {
 	private: System::Windows::Forms::Button^ train_files_load_but;
 	private: System::Windows::Forms::Label^ target_path_lb;
 	private: System::Windows::Forms::GroupBox^ groupBox2;
-	private: System::Windows::Forms::Label^ label5;
-	private: System::Windows::Forms::ComboBox^ comboBox3;
-	private: System::Windows::Forms::ComboBox^ comboBox2;
-	private: System::Windows::Forms::ComboBox^ comboBox1;
-	private: System::Windows::Forms::Label^ label11;
-	private: System::Windows::Forms::RadioButton^ radioButton2;
-	private: System::Windows::Forms::RadioButton^ radioButton1;
-	private: System::Windows::Forms::TextBox^ textBox9;
-	private: System::Windows::Forms::TextBox^ textBox8;
-	private: System::Windows::Forms::TextBox^ textBox7;
-	private: System::Windows::Forms::TextBox^ textBox6;
-	private: System::Windows::Forms::Label^ label10;
-	private: System::Windows::Forms::Label^ label9;
-	private: System::Windows::Forms::Label^ label8;
-	private: System::Windows::Forms::Label^ label7;
-	private: System::Windows::Forms::Label^ label6;
-	private: System::Windows::Forms::TextBox^ textBox10;
-	private: System::Windows::Forms::Label^ label12;
-	private: System::Windows::Forms::TextBox^ textBox11;
-	private: System::Windows::Forms::Label^ label13;
+	private: System::Windows::Forms::Label^ nn_architecture_lb;
+	private: System::Windows::Forms::ComboBox^ reg_cb;
+	private: System::Windows::Forms::ComboBox^ loss_cb;
+	private: System::Windows::Forms::ComboBox^ act_cb;
+
+
+
+
+	private: System::Windows::Forms::Label^ loss_lb;
+	private: System::Windows::Forms::RadioButton^ regressor_rb;
+	private: System::Windows::Forms::RadioButton^ classifier_rb;
+
+
+
+
+
+	private: System::Windows::Forms::TextBox^ n_epochs_tb;
+
+	private: System::Windows::Forms::TextBox^ batch_size_tb;
+
+	private: System::Windows::Forms::TextBox^ learn_rate_tb;
+
+	private: System::Windows::Forms::TextBox^ nn_architecture_tb;
+	private: System::Windows::Forms::Label^ reg_lb;
+
+
+	private: System::Windows::Forms::Label^ act_lb;
+
+	private: System::Windows::Forms::Label^ n_epochs_lb;
+
+	private: System::Windows::Forms::Label^ batch_size_lb;
+
+	private: System::Windows::Forms::Label^ learn_rate_lb;
+	private: System::Windows::Forms::TextBox^ l1_ratio_tb;
+	private: System::Windows::Forms::Label^ l1_ratio_lb;
+
+
+
+	private: System::Windows::Forms::TextBox^ reg_term_tb;
+
+	private: System::Windows::Forms::Label^ reg_term_lb;
+
 	private: System::Windows::Forms::Button^ button2;
 	private: System::Windows::Forms::ProgressBar^ progressBar1;
 	private: System::Windows::Forms::GroupBox^ groupBox3;
@@ -127,7 +157,9 @@ namespace CppCLRWinformsProjekt {
 
 	private: System::Windows::Forms::Label^ label25;
 	private: System::Windows::Forms::Label^ data_path_lb;
-	private: System::Windows::Forms::Button^ button4;
+	private: System::Windows::Forms::Button^ set_parameters_but;
+
+
 	private: System::Windows::Forms::TextBox^ test_size_tb;
 	private: System::Windows::Forms::CheckBox^ test_size_chb;
 
@@ -140,8 +172,8 @@ namespace CppCLRWinformsProjekt {
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
-		/// Erforderliche Methode für die Designerunterstützung.
-		/// Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
+		/// Erforderliche Methode fÃ¼r die DesignerunterstÃ¼tzung.
+		/// Der Inhalt der Methode darf nicht mit dem Code-Editor geÃ¤ndert werden.
 		/// </summary>
 		void InitializeComponent(void)
 		{
@@ -164,28 +196,28 @@ namespace CppCLRWinformsProjekt {
 			this->train_files_load_but = (gcnew System::Windows::Forms::Button());
 			this->button3 = (gcnew System::Windows::Forms::Button());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
-			this->button4 = (gcnew System::Windows::Forms::Button());
+			this->set_parameters_but = (gcnew System::Windows::Forms::Button());
 			this->button2 = (gcnew System::Windows::Forms::Button());
-			this->textBox11 = (gcnew System::Windows::Forms::TextBox());
-			this->label13 = (gcnew System::Windows::Forms::Label());
-			this->textBox10 = (gcnew System::Windows::Forms::TextBox());
-			this->label12 = (gcnew System::Windows::Forms::Label());
-			this->comboBox3 = (gcnew System::Windows::Forms::ComboBox());
-			this->comboBox2 = (gcnew System::Windows::Forms::ComboBox());
-			this->comboBox1 = (gcnew System::Windows::Forms::ComboBox());
-			this->label11 = (gcnew System::Windows::Forms::Label());
-			this->radioButton2 = (gcnew System::Windows::Forms::RadioButton());
-			this->radioButton1 = (gcnew System::Windows::Forms::RadioButton());
-			this->textBox9 = (gcnew System::Windows::Forms::TextBox());
-			this->textBox8 = (gcnew System::Windows::Forms::TextBox());
-			this->textBox7 = (gcnew System::Windows::Forms::TextBox());
-			this->textBox6 = (gcnew System::Windows::Forms::TextBox());
-			this->label10 = (gcnew System::Windows::Forms::Label());
-			this->label9 = (gcnew System::Windows::Forms::Label());
-			this->label8 = (gcnew System::Windows::Forms::Label());
-			this->label7 = (gcnew System::Windows::Forms::Label());
-			this->label6 = (gcnew System::Windows::Forms::Label());
-			this->label5 = (gcnew System::Windows::Forms::Label());
+			this->reg_term_tb = (gcnew System::Windows::Forms::TextBox());
+			this->reg_term_lb = (gcnew System::Windows::Forms::Label());
+			this->l1_ratio_tb = (gcnew System::Windows::Forms::TextBox());
+			this->l1_ratio_lb = (gcnew System::Windows::Forms::Label());
+			this->reg_cb = (gcnew System::Windows::Forms::ComboBox());
+			this->loss_cb = (gcnew System::Windows::Forms::ComboBox());
+			this->act_cb = (gcnew System::Windows::Forms::ComboBox());
+			this->loss_lb = (gcnew System::Windows::Forms::Label());
+			this->regressor_rb = (gcnew System::Windows::Forms::RadioButton());
+			this->classifier_rb = (gcnew System::Windows::Forms::RadioButton());
+			this->n_epochs_tb = (gcnew System::Windows::Forms::TextBox());
+			this->batch_size_tb = (gcnew System::Windows::Forms::TextBox());
+			this->learn_rate_tb = (gcnew System::Windows::Forms::TextBox());
+			this->nn_architecture_tb = (gcnew System::Windows::Forms::TextBox());
+			this->reg_lb = (gcnew System::Windows::Forms::Label());
+			this->act_lb = (gcnew System::Windows::Forms::Label());
+			this->n_epochs_lb = (gcnew System::Windows::Forms::Label());
+			this->batch_size_lb = (gcnew System::Windows::Forms::Label());
+			this->learn_rate_lb = (gcnew System::Windows::Forms::Label());
+			this->nn_architecture_lb = (gcnew System::Windows::Forms::Label());
 			this->progressBar1 = (gcnew System::Windows::Forms::ProgressBar());
 			this->groupBox3 = (gcnew System::Windows::Forms::GroupBox());
 			this->label23 = (gcnew System::Windows::Forms::Label());
@@ -281,6 +313,7 @@ namespace CppCLRWinformsProjekt {
 			this->dev_size_tb->Name = L"dev_size_tb";
 			this->dev_size_tb->Size = System::Drawing::Size(78, 20);
 			this->dev_size_tb->TabIndex = 9;
+			this->dev_size_tb->Text = L"0.2";
 			this->dev_size_tb->Visible = false;
 			this->dev_size_tb->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &Form1::dev_size_tb_KeyPress);
 			// 
@@ -312,6 +345,7 @@ namespace CppCLRWinformsProjekt {
 			this->test_size_tb->Name = L"test_size_tb";
 			this->test_size_tb->Size = System::Drawing::Size(78, 20);
 			this->test_size_tb->TabIndex = 17;
+			this->test_size_tb->Text = L"0.1";
 			this->test_size_tb->Visible = false;
 			this->test_size_tb->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &Form1::test_size_tb_KeyPress);
 			// 
@@ -340,9 +374,9 @@ namespace CppCLRWinformsProjekt {
 			this->y_features_lb->AutoSize = true;
 			this->y_features_lb->Location = System::Drawing::Point(280, 74);
 			this->y_features_lb->Name = L"y_features_lb";
-			this->y_features_lb->Size = System::Drawing::Size(127, 13);
+			this->y_features_lb->Size = System::Drawing::Size(130, 13);
 			this->y_features_lb->TabIndex = 14;
-			this->y_features_lb->Text = L"Number of taget features:";
+			this->y_features_lb->Text = L"Number of target features:";
 			// 
 			// x_features_lb
 			// 
@@ -383,28 +417,28 @@ namespace CppCLRWinformsProjekt {
 			// 
 			// groupBox2
 			// 
-			this->groupBox2->Controls->Add(this->button4);
+			this->groupBox2->Controls->Add(this->set_parameters_but);
 			this->groupBox2->Controls->Add(this->button2);
-			this->groupBox2->Controls->Add(this->textBox11);
-			this->groupBox2->Controls->Add(this->label13);
-			this->groupBox2->Controls->Add(this->textBox10);
-			this->groupBox2->Controls->Add(this->label12);
-			this->groupBox2->Controls->Add(this->comboBox3);
-			this->groupBox2->Controls->Add(this->comboBox2);
-			this->groupBox2->Controls->Add(this->comboBox1);
-			this->groupBox2->Controls->Add(this->label11);
-			this->groupBox2->Controls->Add(this->radioButton2);
-			this->groupBox2->Controls->Add(this->radioButton1);
-			this->groupBox2->Controls->Add(this->textBox9);
-			this->groupBox2->Controls->Add(this->textBox8);
-			this->groupBox2->Controls->Add(this->textBox7);
-			this->groupBox2->Controls->Add(this->textBox6);
-			this->groupBox2->Controls->Add(this->label10);
-			this->groupBox2->Controls->Add(this->label9);
-			this->groupBox2->Controls->Add(this->label8);
-			this->groupBox2->Controls->Add(this->label7);
-			this->groupBox2->Controls->Add(this->label6);
-			this->groupBox2->Controls->Add(this->label5);
+			this->groupBox2->Controls->Add(this->reg_term_tb);
+			this->groupBox2->Controls->Add(this->reg_term_lb);
+			this->groupBox2->Controls->Add(this->l1_ratio_tb);
+			this->groupBox2->Controls->Add(this->l1_ratio_lb);
+			this->groupBox2->Controls->Add(this->reg_cb);
+			this->groupBox2->Controls->Add(this->loss_cb);
+			this->groupBox2->Controls->Add(this->act_cb);
+			this->groupBox2->Controls->Add(this->loss_lb);
+			this->groupBox2->Controls->Add(this->regressor_rb);
+			this->groupBox2->Controls->Add(this->classifier_rb);
+			this->groupBox2->Controls->Add(this->n_epochs_tb);
+			this->groupBox2->Controls->Add(this->batch_size_tb);
+			this->groupBox2->Controls->Add(this->learn_rate_tb);
+			this->groupBox2->Controls->Add(this->nn_architecture_tb);
+			this->groupBox2->Controls->Add(this->reg_lb);
+			this->groupBox2->Controls->Add(this->act_lb);
+			this->groupBox2->Controls->Add(this->n_epochs_lb);
+			this->groupBox2->Controls->Add(this->batch_size_lb);
+			this->groupBox2->Controls->Add(this->learn_rate_lb);
+			this->groupBox2->Controls->Add(this->nn_architecture_lb);
 			this->groupBox2->Location = System::Drawing::Point(12, 224);
 			this->groupBox2->Name = L"groupBox2";
 			this->groupBox2->Size = System::Drawing::Size(557, 151);
@@ -412,14 +446,15 @@ namespace CppCLRWinformsProjekt {
 			this->groupBox2->TabStop = false;
 			this->groupBox2->Text = L"Hyperparameters of neural network model";
 			// 
-			// button4
+			// set_parameters_but
 			// 
-			this->button4->Location = System::Drawing::Point(113, 122);
-			this->button4->Name = L"button4";
-			this->button4->Size = System::Drawing::Size(161, 23);
-			this->button4->TabIndex = 21;
-			this->button4->Text = L"Set parameters";
-			this->button4->UseVisualStyleBackColor = true;
+			this->set_parameters_but->Location = System::Drawing::Point(112, 122);
+			this->set_parameters_but->Name = L"set_parameters_but";
+			this->set_parameters_but->Size = System::Drawing::Size(161, 23);
+			this->set_parameters_but->TabIndex = 21;
+			this->set_parameters_but->Text = L"Set parameters";
+			this->set_parameters_but->UseVisualStyleBackColor = true;
+			this->set_parameters_but->Click += gcnew System::EventHandler(this, &Form1::set_parameters_but_Click);
 			// 
 			// button2
 			// 
@@ -430,178 +465,197 @@ namespace CppCLRWinformsProjekt {
 			this->button2->Text = L"Fit";
 			this->button2->UseVisualStyleBackColor = true;
 			// 
-			// textBox11
+			// reg_term_tb
 			// 
-			this->textBox11->Location = System::Drawing::Point(361, 79);
-			this->textBox11->Name = L"textBox11";
-			this->textBox11->Size = System::Drawing::Size(60, 20);
-			this->textBox11->TabIndex = 19;
+			this->reg_term_tb->Location = System::Drawing::Point(361, 79);
+			this->reg_term_tb->Name = L"reg_term_tb";
+			this->reg_term_tb->Size = System::Drawing::Size(60, 20);
+			this->reg_term_tb->TabIndex = 19;
+			this->reg_term_tb->Visible = false;
+			this->reg_term_tb->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &Form1::reg_term_tb_KeyPress);
 			// 
-			// label13
+			// reg_term_lb
 			// 
-			this->label13->AutoSize = true;
-			this->label13->Location = System::Drawing::Point(280, 82);
-			this->label13->Name = L"label13";
-			this->label13->Size = System::Drawing::Size(48, 13);
-			this->label13->TabIndex = 18;
-			this->label13->Text = L"Lambda:";
+			this->reg_term_lb->AutoSize = true;
+			this->reg_term_lb->Location = System::Drawing::Point(280, 82);
+			this->reg_term_lb->Name = L"reg_term_lb";
+			this->reg_term_lb->Size = System::Drawing::Size(48, 13);
+			this->reg_term_lb->TabIndex = 18;
+			this->reg_term_lb->Text = L"Lambda:";
+			this->reg_term_lb->Visible = false;
 			// 
-			// textBox10
+			// l1_ratio_tb
 			// 
-			this->textBox10->Location = System::Drawing::Point(491, 79);
-			this->textBox10->Name = L"textBox10";
-			this->textBox10->Size = System::Drawing::Size(60, 20);
-			this->textBox10->TabIndex = 17;
+			this->l1_ratio_tb->Location = System::Drawing::Point(491, 79);
+			this->l1_ratio_tb->Name = L"l1_ratio_tb";
+			this->l1_ratio_tb->Size = System::Drawing::Size(60, 20);
+			this->l1_ratio_tb->TabIndex = 17;
+			this->l1_ratio_tb->Visible = false;
+			this->l1_ratio_tb->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &Form1::l1_ratio_tb_KeyPress);
 			// 
-			// label12
+			// l1_ratio_lb
 			// 
-			this->label12->AutoSize = true;
-			this->label12->Location = System::Drawing::Point(427, 82);
-			this->label12->Name = L"label12";
-			this->label12->Size = System::Drawing::Size(45, 13);
-			this->label12->TabIndex = 16;
-			this->label12->Text = L"L1 ratio:";
+			this->l1_ratio_lb->AutoSize = true;
+			this->l1_ratio_lb->Location = System::Drawing::Point(427, 82);
+			this->l1_ratio_lb->Name = L"l1_ratio_lb";
+			this->l1_ratio_lb->Size = System::Drawing::Size(45, 13);
+			this->l1_ratio_lb->TabIndex = 16;
+			this->l1_ratio_lb->Text = L"L1 ratio:";
+			this->l1_ratio_lb->Visible = false;
 			// 
-			// comboBox3
+			// reg_cb
 			// 
-			this->comboBox3->FormattingEnabled = true;
-			this->comboBox3->Items->AddRange(gcnew cli::array< System::Object^  >(4) { L"None", L"L1", L"L2", L"Elastic net" });
-			this->comboBox3->Location = System::Drawing::Point(430, 57);
-			this->comboBox3->Name = L"comboBox3";
-			this->comboBox3->Size = System::Drawing::Size(121, 21);
-			this->comboBox3->TabIndex = 15;
-			this->comboBox3->SelectedValueChanged += gcnew System::EventHandler(this, &Form1::comboBox3_SelectedValueChanged);
+			this->reg_cb->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
+			this->reg_cb->FormattingEnabled = true;
+			this->reg_cb->Items->AddRange(gcnew cli::array< System::Object^  >(4) { L"None", L"L1", L"L2", L"Elastic net" });
+			this->reg_cb->Location = System::Drawing::Point(430, 57);
+			this->reg_cb->Name = L"reg_cb";
+			this->reg_cb->Size = System::Drawing::Size(121, 21);
+			this->reg_cb->TabIndex = 15;
+			this->reg_cb->SelectedIndexChanged += gcnew System::EventHandler(this, &Form1::reg_cb_SelectedIndexChanged);
 			// 
-			// comboBox2
+			// loss_cb
 			// 
-			this->comboBox2->FormattingEnabled = true;
-			this->comboBox2->Items->AddRange(gcnew cli::array< System::Object^  >(2) { L"MSE", L"Cross-entropy" });
-			this->comboBox2->Location = System::Drawing::Point(430, 35);
-			this->comboBox2->Name = L"comboBox2";
-			this->comboBox2->Size = System::Drawing::Size(121, 21);
-			this->comboBox2->TabIndex = 14;
+			this->loss_cb->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
+			this->loss_cb->FormattingEnabled = true;
+			this->loss_cb->Items->AddRange(gcnew cli::array< System::Object^  >(2) { L"MSE", L"Cross-entropy" });
+			this->loss_cb->Location = System::Drawing::Point(430, 35);
+			this->loss_cb->Name = L"loss_cb";
+			this->loss_cb->Size = System::Drawing::Size(121, 21);
+			this->loss_cb->TabIndex = 14;
 			// 
-			// comboBox1
+			// act_cb
 			// 
-			this->comboBox1->FormattingEnabled = true;
-			this->comboBox1->Items->AddRange(gcnew cli::array< System::Object^  >(3) { L"Sigmoid", L"ReLU", L"Tanh" });
-			this->comboBox1->Location = System::Drawing::Point(430, 13);
-			this->comboBox1->Name = L"comboBox1";
-			this->comboBox1->Size = System::Drawing::Size(121, 21);
-			this->comboBox1->TabIndex = 13;
+			this->act_cb->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
+			this->act_cb->FormattingEnabled = true;
+			this->act_cb->Items->AddRange(gcnew cli::array< System::Object^  >(5) { L"Sigmoid", L"ReLU", L"Tanh", L"Softmax", L"Linear" });
+			this->act_cb->Location = System::Drawing::Point(430, 13);
+			this->act_cb->Name = L"act_cb";
+			this->act_cb->Size = System::Drawing::Size(121, 21);
+			this->act_cb->TabIndex = 13;
 			// 
-			// label11
+			// loss_lb
 			// 
-			this->label11->AutoSize = true;
-			this->label11->Location = System::Drawing::Point(280, 38);
-			this->label11->Name = L"label11";
-			this->label11->Size = System::Drawing::Size(73, 13);
-			this->label11->TabIndex = 12;
-			this->label11->Text = L"Loss function:";
+			this->loss_lb->AutoSize = true;
+			this->loss_lb->Location = System::Drawing::Point(280, 38);
+			this->loss_lb->Name = L"loss_lb";
+			this->loss_lb->Size = System::Drawing::Size(73, 13);
+			this->loss_lb->TabIndex = 12;
+			this->loss_lb->Text = L"Loss function:";
 			// 
-			// radioButton2
+			// regressor_rb
 			// 
-			this->radioButton2->AutoSize = true;
-			this->radioButton2->Location = System::Drawing::Point(97, 105);
-			this->radioButton2->Name = L"radioButton2";
-			this->radioButton2->Size = System::Drawing::Size(78, 17);
-			this->radioButton2->TabIndex = 11;
-			this->radioButton2->TabStop = true;
-			this->radioButton2->Text = L"Regression";
-			this->radioButton2->UseVisualStyleBackColor = true;
+			this->regressor_rb->AutoSize = true;
+			this->regressor_rb->Location = System::Drawing::Point(97, 105);
+			this->regressor_rb->Name = L"regressor_rb";
+			this->regressor_rb->Size = System::Drawing::Size(78, 17);
+			this->regressor_rb->TabIndex = 11;
+			this->regressor_rb->TabStop = true;
+			this->regressor_rb->Text = L"Regression";
+			this->regressor_rb->UseVisualStyleBackColor = true;
+			this->regressor_rb->CheckedChanged += gcnew System::EventHandler(this, &Form1::regressor_rb_CheckedChanged);
 			// 
-			// radioButton1
+			// classifier_rb
 			// 
-			this->radioButton1->AutoSize = true;
-			this->radioButton1->Location = System::Drawing::Point(6, 105);
-			this->radioButton1->Name = L"radioButton1";
-			this->radioButton1->Size = System::Drawing::Size(86, 17);
-			this->radioButton1->TabIndex = 10;
-			this->radioButton1->TabStop = true;
-			this->radioButton1->Text = L"Classification";
-			this->radioButton1->UseVisualStyleBackColor = true;
+			this->classifier_rb->AutoSize = true;
+			this->classifier_rb->Location = System::Drawing::Point(6, 105);
+			this->classifier_rb->Name = L"classifier_rb";
+			this->classifier_rb->Size = System::Drawing::Size(86, 17);
+			this->classifier_rb->TabIndex = 10;
+			this->classifier_rb->TabStop = true;
+			this->classifier_rb->Text = L"Classification";
+			this->classifier_rb->UseVisualStyleBackColor = true;
+			this->classifier_rb->CheckedChanged += gcnew System::EventHandler(this, &Form1::classifier_rb_CheckedChanged);
 			// 
-			// textBox9
+			// n_epochs_tb
 			// 
-			this->textBox9->Location = System::Drawing::Point(174, 79);
-			this->textBox9->Name = L"textBox9";
-			this->textBox9->Size = System::Drawing::Size(100, 20);
-			this->textBox9->TabIndex = 9;
+			this->n_epochs_tb->Location = System::Drawing::Point(174, 79);
+			this->n_epochs_tb->Name = L"n_epochs_tb";
+			this->n_epochs_tb->Size = System::Drawing::Size(100, 20);
+			this->n_epochs_tb->TabIndex = 9;
+			this->n_epochs_tb->Text = L"10";
+			this->n_epochs_tb->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &Form1::n_epochs_tb_KeyPress);
 			// 
-			// textBox8
+			// batch_size_tb
 			// 
-			this->textBox8->Location = System::Drawing::Point(174, 57);
-			this->textBox8->Name = L"textBox8";
-			this->textBox8->Size = System::Drawing::Size(100, 20);
-			this->textBox8->TabIndex = 8;
+			this->batch_size_tb->Location = System::Drawing::Point(174, 57);
+			this->batch_size_tb->Name = L"batch_size_tb";
+			this->batch_size_tb->Size = System::Drawing::Size(100, 20);
+			this->batch_size_tb->TabIndex = 8;
+			this->batch_size_tb->Text = L"64";
+			this->batch_size_tb->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &Form1::batch_size_tb_KeyPress);
 			// 
-			// textBox7
+			// learn_rate_tb
 			// 
-			this->textBox7->Location = System::Drawing::Point(174, 35);
-			this->textBox7->Name = L"textBox7";
-			this->textBox7->Size = System::Drawing::Size(100, 20);
-			this->textBox7->TabIndex = 7;
+			this->learn_rate_tb->Location = System::Drawing::Point(174, 35);
+			this->learn_rate_tb->Name = L"learn_rate_tb";
+			this->learn_rate_tb->Size = System::Drawing::Size(100, 20);
+			this->learn_rate_tb->TabIndex = 7;
+			this->learn_rate_tb->Text = L"0,01";
+			this->learn_rate_tb->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &Form1::learn_rate_tb_KeyPress);
 			// 
-			// textBox6
+			// nn_architecture_tb
 			// 
-			this->textBox6->Location = System::Drawing::Point(174, 13);
-			this->textBox6->Name = L"textBox6";
-			this->textBox6->Size = System::Drawing::Size(100, 20);
-			this->textBox6->TabIndex = 6;
+			this->nn_architecture_tb->Location = System::Drawing::Point(174, 13);
+			this->nn_architecture_tb->Name = L"nn_architecture_tb";
+			this->nn_architecture_tb->Size = System::Drawing::Size(100, 20);
+			this->nn_architecture_tb->TabIndex = 6;
+			this->nn_architecture_tb->Text = L"784-10-10";
+			this->nn_architecture_tb->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &Form1::nn_architecture_tb_KeyPress);
 			// 
-			// label10
+			// reg_lb
 			// 
-			this->label10->AutoSize = true;
-			this->label10->Location = System::Drawing::Point(280, 60);
-			this->label10->Name = L"label10";
-			this->label10->Size = System::Drawing::Size(80, 13);
-			this->label10->TabIndex = 5;
-			this->label10->Text = L"Regularization: ";
+			this->reg_lb->AutoSize = true;
+			this->reg_lb->Location = System::Drawing::Point(280, 60);
+			this->reg_lb->Name = L"reg_lb";
+			this->reg_lb->Size = System::Drawing::Size(80, 13);
+			this->reg_lb->TabIndex = 5;
+			this->reg_lb->Text = L"Regularization: ";
 			// 
-			// label9
+			// act_lb
 			// 
-			this->label9->AutoSize = true;
-			this->label9->Location = System::Drawing::Point(280, 16);
-			this->label9->Name = L"label9";
-			this->label9->Size = System::Drawing::Size(98, 13);
-			this->label9->TabIndex = 4;
-			this->label9->Text = L"Activation function:";
+			this->act_lb->AutoSize = true;
+			this->act_lb->Location = System::Drawing::Point(280, 16);
+			this->act_lb->Name = L"act_lb";
+			this->act_lb->Size = System::Drawing::Size(98, 13);
+			this->act_lb->TabIndex = 4;
+			this->act_lb->Text = L"Activation function:";
 			// 
-			// label8
+			// n_epochs_lb
 			// 
-			this->label8->AutoSize = true;
-			this->label8->Location = System::Drawing::Point(6, 82);
-			this->label8->Name = L"label8";
-			this->label8->Size = System::Drawing::Size(97, 13);
-			this->label8->TabIndex = 3;
-			this->label8->Text = L"Number of epochs:";
+			this->n_epochs_lb->AutoSize = true;
+			this->n_epochs_lb->Location = System::Drawing::Point(6, 82);
+			this->n_epochs_lb->Name = L"n_epochs_lb";
+			this->n_epochs_lb->Size = System::Drawing::Size(97, 13);
+			this->n_epochs_lb->TabIndex = 3;
+			this->n_epochs_lb->Text = L"Number of epochs:";
 			// 
-			// label7
+			// batch_size_lb
 			// 
-			this->label7->AutoSize = true;
-			this->label7->Location = System::Drawing::Point(6, 60);
-			this->label7->Name = L"label7";
-			this->label7->Size = System::Drawing::Size(53, 13);
-			this->label7->TabIndex = 2;
-			this->label7->Text = L"Bath size:";
+			this->batch_size_lb->AutoSize = true;
+			this->batch_size_lb->Location = System::Drawing::Point(6, 60);
+			this->batch_size_lb->Name = L"batch_size_lb";
+			this->batch_size_lb->Size = System::Drawing::Size(53, 13);
+			this->batch_size_lb->TabIndex = 2;
+			this->batch_size_lb->Text = L"Bath size:";
 			// 
-			// label6
+			// learn_rate_lb
 			// 
-			this->label6->AutoSize = true;
-			this->label6->Location = System::Drawing::Point(6, 38);
-			this->label6->Name = L"label6";
-			this->label6->Size = System::Drawing::Size(72, 13);
-			this->label6->TabIndex = 1;
-			this->label6->Text = L"Learning rate:";
+			this->learn_rate_lb->AutoSize = true;
+			this->learn_rate_lb->Location = System::Drawing::Point(6, 38);
+			this->learn_rate_lb->Name = L"learn_rate_lb";
+			this->learn_rate_lb->Size = System::Drawing::Size(72, 13);
+			this->learn_rate_lb->TabIndex = 1;
+			this->learn_rate_lb->Text = L"Learning rate:";
 			// 
-			// label5
+			// nn_architecture_lb
 			// 
-			this->label5->AutoSize = true;
-			this->label5->Location = System::Drawing::Point(6, 16);
-			this->label5->Name = L"label5";
-			this->label5->Size = System::Drawing::Size(141, 13);
-			this->label5->TabIndex = 0;
-			this->label5->Text = L"Neural network architecture:";
+			this->nn_architecture_lb->AutoSize = true;
+			this->nn_architecture_lb->Location = System::Drawing::Point(6, 16);
+			this->nn_architecture_lb->Name = L"nn_architecture_lb";
+			this->nn_architecture_lb->Size = System::Drawing::Size(141, 13);
+			this->nn_architecture_lb->TabIndex = 0;
+			this->nn_architecture_lb->Text = L"Neural network architecture:";
 			// 
 			// progressBar1
 			// 
@@ -749,12 +803,6 @@ namespace CppCLRWinformsProjekt {
 		return (dev_size + test_size < 1) ? true : false;
 	}
 
-	private: System::Void comboBox3_SelectedValueChanged(System::Object^ sender, System::EventArgs^ e) {
-		if (this->comboBox3->SelectedItem == "Elastic net") {
-			this->textBox10->Visible = !this->textBox10->Visible;
-		}
-	}
-
 	private: System::Void data_path_tb_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e) {
 		if (e->KeyChar == (char)Keys::Enter) {
 			String^ sys_td_path = this->data_path_tb->Text;
@@ -772,7 +820,7 @@ namespace CppCLRWinformsProjekt {
 				train_data = &Data_handler::load_data(td_path, n_td_features);
 			}
 			catch (Error^ e) { MessageBox::Show(e->mess); }
-			catch(...){}
+			catch (...) {}
 		}
 	}
 
@@ -853,20 +901,21 @@ namespace CppCLRWinformsProjekt {
 		}
 	}
 
+	// FIX - problÃ©m s pointery
 	private: System::Void train_files_load_but_Click(System::Object^ sender, System::EventArgs^ e) {
 		System::Windows::Forms::KeyPressEventArgs^ f = gcnew System::Windows::Forms::KeyPressEventArgs((char)Keys::Enter);
-		data_path_tb_KeyPress(sender, f); 
-		target_path_tb_KeyPress(sender, f); 
+		data_path_tb_KeyPress(sender, f);
+		target_path_tb_KeyPress(sender, f);
 
 		if (dev_size_chb->Checked) {
 			dev_size_tb_KeyPress(sender, f);
-			
+
 
 			if (check_split_sizes()) {
 				Data_handler::data_split(*train_data, *train_target, train_data, train_target, dev_data, dev_target, dev_size);
 			}
 		}
-		
+
 		if (test_size_chb->Checked) {
 			test_size_tb_KeyPress(sender, f);
 
@@ -877,7 +926,156 @@ namespace CppCLRWinformsProjekt {
 
 	}
 
+	private: System::Void set_parameters_but_Click(System::Object^ sender, System::EventArgs^ e) {
+		System::Windows::Forms::KeyPressEventArgs^ f = gcnew System::Windows::Forms::KeyPressEventArgs((char)Keys::Enter);
+		nn_architecture_tb_KeyPress(sender, f);
+		learn_rate_tb_KeyPress(sender, f);
+		batch_size_tb_KeyPress(sender, f);
+		n_epochs_tb_KeyPress(sender, f);
+
+		// TODO - pÅ™idat aktivace, loss, regularizace
+	}
+
+	private: System::Void nn_architecture_tb_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e) {
+		if (e->KeyChar == (char)Keys::Enter) {
+			String^ sys_nn_architecture = this->nn_architecture_tb->Text;
+			std::string nn_architecture = msclr::interop::marshal_as<std::string>(sys_nn_architecture);
+
+			std::vector<int> architecture;
+			int n = 0;
+			for (int i = 0;i < nn_architecture.length();i++) {
+				char c = nn_architecture.at(i);
+				if (48 <= c && c < 58) {
+					n = 10 * n + c - 48;
+				}
+				else {
+					if (n!=0) architecture.push_back(n);
+					n = 0;
+				}
+			}
+
+			bool ok = true;
+			int e = 0;
+			for (int i = 0;i < architecture.size();i++) {
+				if (architecture.at(i) <= 0) {
+					ok = false; e = architecture.at(i);
+					break;
+				}
+			}
+
+			if (ok) { 
+				this->architecture = &architecture;
+			}
+			else {
+				Input_error^ ie = gcnew Input_error(e, "int>0");
+				MessageBox::Show(ie->mess);
+			}
+		}
+	}
+
+	private: System::Void learn_rate_tb_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e) {
+		if (e->KeyChar == (char)Keys::Enter) {
+			try {
+				this->learn_rate = double::Parse(this->learn_rate_tb->Text);
+				if (learn_rate <= 0) {
+					throw gcnew Input_error(learn_rate, "double>0");
+				}
+			}
+			catch (Error^ e) { MessageBox::Show(e->mess); }
+			catch (...) { MessageBox::Show("Loading learning rate failed!"); }
+		}
+	}
+
+	private: System::Void batch_size_tb_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e) {
+		if (e->KeyChar == (char)Keys::Enter) {
+			try {
+				this->batch_size = int::Parse(this->batch_size_tb->Text);
+				if (batch_size <= 0) { throw gcnew Input_error(batch_size, "int>0"); }
+			}
+			catch (Error^ e) { MessageBox::Show(e->mess); }
+			catch (...) {
+				MessageBox::Show("Loading batch_size failed!");
+			}
+		}
+	}
+
+	private: System::Void n_epochs_tb_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e) {
+		if (e->KeyChar == (char)Keys::Enter) {
+			try {
+				this->epochs = int::Parse(this->n_epochs_tb->Text);
+				if (epochs <= 0) { throw gcnew Input_error(epochs, "int>0"); }
+			}
+			catch (Error^ e) { MessageBox::Show(e->mess); }
+			catch (...) {
+				MessageBox::Show("Loading n_epochs failed!");
+			}
+		}
+	}
+
+	// TODO - upravit nabÃ­dku loss
+	private: System::Void classifier_rb_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		if (classifier_rb->Checked) {
+			this->loss_cb->ResetText();
+			this->loss_cb->Items->Clear();
+			this->loss_cb->Items->AddRange(gcnew cli::array< System::Object^>(1) { L"Cross-entropy"});
+		}
+	}
+
+	private: System::Void regressor_rb_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		if (regressor_rb->Checked) {
+			this->loss_cb->ResetText();
+			this->loss_cb->Items->Clear();
+			this->loss_cb->Items->AddRange(gcnew cli::array<System::Object^>(1) { L"MSE" });
+		}
+	}
+
+	private: System::Void reg_cb_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e) {
+		this->reg_term_tb->ResetText();
+		this->reg_term_tb->Visible = false;
+		this->reg_term_lb->Visible = false;
+		this->l1_ratio_tb->ResetText();
+		this->l1_ratio_tb->Visible = false;
+		this->l1_ratio_lb->Visible = false;
+		String^ reg = this->reg_cb->Text;
+
+		if (reg == "L1") {
+			this->reg_term_lb->Visible = true;
+			this->reg_term_tb->Visible = true;
+		}
+		if (reg == "L2") {
+			this->reg_term_lb->Visible = true;
+			this->reg_term_tb->Visible = true;
+		}
+		if (reg == "Elastic net") {
+			this->reg_term_lb->Visible = true;
+			this->reg_term_tb->Visible = true;
+			this->l1_ratio_lb->Visible = true;
+			this->l1_ratio_tb->Visible = true;
+		}
+	}
+
+	private: System::Void reg_term_tb_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e) {
+		if (e->KeyChar == (char)Keys::Enter) {
+			try {
+				this->reg_term = double::Parse(this->reg_term_tb->Text);
+				if (reg_term < 0) { throw gcnew Input_error(reg_term, "double>=0"); }
+			}
+			catch (Error^ e) { MessageBox::Show(e->mess); }
+			catch (...) { MessageBox::Show("Loading reg_term failed!"); }
+		}
+	}
+
+	private: System::Void l1_ratio_tb_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e) {
+		if (e->KeyChar == (char)Keys::Enter) {
+			try {
+				this->l1_ratio = double::Parse(this->l1_ratio_tb->Text);
+				if (l1_ratio < 0 || l1_ratio>1) { throw gcnew Input_error(l1_ratio, "0<=double<=1"); }
+			}
+			catch (Error^ e) { MessageBox::Show(e->mess); }
+			catch (...) { MessageBox::Show("Loading l1_ratio failed!"); }
+		}
+	}
 };
+}
 
 	
-}
